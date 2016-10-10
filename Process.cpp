@@ -17,7 +17,6 @@ void CreateFinalTST(TST &tst)
 	tst.read("../ngram/5prune.txt");
 }
 
-
 void ReadFromRawData(TST &tst, int ngram)
 {
 	string line;
@@ -73,51 +72,29 @@ void writeTST(TST & tst, int ngram, const char * filename, const char * prunefil
 	tsttmp.write(prunefilename, ngram);
 }
 
-void _1gram()
+void _ngram(int ngram)
 {
 	TST tst;
-	ReadFromRawData(tst, 1);
-	writeTST(tst, 1, "../ngram/1.txt", "../ngram/1prune.txt");
+	string basedir("../ngram/");
+	if(ngram > 1)
+	{
+		string filepath = basedir+to_string(ngram-1)+"prune.txt";
+		tst.read(filepath.c_str());
+	}
+	ReadFromRawData(tst, ngram);
+	string outfile = basedir+to_string(ngram)+".txt";
+	string outprunefile = basedir+to_string(ngram)+"prune.txt";
+	writeTST(tst, ngram, outfile.c_str(), outprunefile.c_str());
 }
-
-void _2gram()
-{
-	TST tst;
-	tst.read("../ngram/1prune.txt");
-	ReadFromRawData(tst, 2);
-	writeTST(tst, 2, "../ngram/2.txt", "../ngram/2prune.txt");
-}
-void _3gram()
-{
-	TST tst;
-	tst.read("../ngram/2prune.txt");
-	ReadFromRawData(tst, 3);
-	writeTST(tst, 3, "../ngram/3.txt", "../ngram/3prune.txt");
-}
-void _4gram()
-{
-	TST tst;
-	tst.read("../ngram/3prune.txt");
-	ReadFromRawData(tst, 4);
-	writeTST(tst, 4, "../ngram/4.txt", "../ngram/4prune.txt");
-}
-void _5gram()
-{
-	TST tst;
-	tst.read("../ngram/4prune.txt");
-	ReadFromRawData(tst, 5);
-	writeTST(tst, 5, "../ngram/5.txt", "../ngram/5prune.txt");
-}
-
 
 void GenerateData()
 {
 	clock_t begin = clock();
-	_1gram();
-	_2gram();
-	_3gram();
-	_4gram();
-	_5gram();
+	_ngram(1);
+	_ngram(2);
+	_ngram(3);
+	_ngram(4);
+	_ngram(5);
 	TST tst;
 	CreateFinalTST(tst);
 	tst.serialize("../serial.txt");
