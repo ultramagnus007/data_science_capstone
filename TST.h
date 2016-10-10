@@ -9,21 +9,26 @@
 #include <unordered_map>
 using namespace std;
 
-
-
-
-class SVAL
+class StringCount
 {
 	public:
-	SVAL(){s="", count = 0;}
-	string s;
+	StringCount(){str="", count = 0;}
+	string str;
 	double count;
 };	
+
+class StringProb
+{
+	public:
+	StringProb(){str="", prob = 0;}
+	string str;
+	double prob;
+};
 
 class CompMIN
 {
 	public:
-	bool operator()(const SVAL & p1, const SVAL & p2)const
+	bool operator()(const StringCount& p1, const StringCount& p2)const
 	{
 		return p1.count > p2.count;
 	}
@@ -32,16 +37,16 @@ class CompMIN
 class CompMAX
 {
 	public:
-	bool operator()(const SVAL & p1, const SVAL & p2)const
+	bool operator()(const StringProb & p1, const StringProb & p2)const
 	{
-		return p1.count < p2.count;
+		return p1.prob < p2.prob;
 	}
 };
 
 
 
 
-typedef priority_queue<SVAL, vector<SVAL>, CompMIN>  PQ_TYPE;
+typedef priority_queue<StringCount, vector<StringCount>, CompMIN>  PQ_TYPE;
 typedef unordered_set<string> HS_TYPE;
 typedef unordered_map<string, double> HT_TYPE;
 
@@ -76,6 +81,7 @@ class TST
 	void insert(string &str, int val = 0);
 	int find(string &str);
 	void write(const char *filepath, int ngram = -1);
+	void write(ofstream &, node * , char * buff, int i, int spcount, int ngram);
 	node * root;
 	void read(const char * filepath, int mincount = 1);
 	void prune(int count);

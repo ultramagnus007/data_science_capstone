@@ -6,7 +6,8 @@
 
 int main()
 {
-	initializeTST();
+	initializeTST("../serial.txt");
+	cout<<"LOADED\n";
 	string str;
 	while (getline (cin, str))
 	{	
@@ -30,10 +31,10 @@ int main()
 		clock_t begin = clock();
 		string str;
 		getline(cin, str);
-		vector<SVAL> ret;
+		vector<StringProb> ret;
 		StupidBackOff(tst, str, ret);
 		if(ret.size() > 0)
-		cout<<ret[0].s<<endl;
+		cout<<ret[0].str<<endl;
 		else
 		cout<<"NA"<<endl;
 		clock_t end = clock();

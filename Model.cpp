@@ -17,7 +17,7 @@ void getString(vector<string> & inputWordV, int ngram, string &s)
 //static vector<double> weights = {0.025, 0.135, 0.27, 0.57};
 static vector<double> weights = {0.01, 0.025, 0.135, 0.27, 0.56};
 static double uniTotal = 56199450;
-void StupidBackOff(TST& tst, string & line, vector<SVAL> & ret)
+void StupidBackOff(TST& tst, string & line, vector<StringProb> & ret)
 {
 	istringstream iss(line);
 	vector<string> inputWordV;
@@ -45,34 +45,32 @@ void StupidBackOff(TST& tst, string & line, vector<SVAL> & ret)
 		int V = tst.find(s);
 		while(!predQ.empty())
 		{
-			SVAL sval = predQ.top();
+			StringCount sval = predQ.top();
 			predQ.pop();
-			unordered_map<string, double>::iterator it = HT.find(sval.s);
-	
-
+			unordered_map<string, double>::iterator it = HT.find(sval.str);
 			double val = sval.count*weights[ngram-1]/V;
 			if(it == HT.end())
 			{
-				int unicount = tst.find(sval.s);
-				HT[sval.s] = val + unicount/uniTotal;
+				int unicount = tst.find(sval.str);
+				HT[sval.str] = val + unicount/uniTotal;
 			}
 			else
-				HT[sval.s] = it->second+ val;
+				HT[sval.str] = it->second+ val;
 		}
 			
 	}
-	priority_queue<SVAL, vector<SVAL>, CompMAX> finalPQ;
+	priority_queue<StringProb, vector<StringProb>, CompMAX> finalPQ;
 	for(auto it = HT.begin(); it != HT.end(); it++)
 	{
-			SVAL v;
-			v.s = it->first;
-			v.count = it->second;
-			finalPQ.push(v);
+		StringProb v;
+		v.str = it->first;
+		v.prob = it->second;
+		finalPQ.push(v);
 	}
 	for(int i = 0; i < 3 && i < finalPQ.size(); i++)
 	{
-			ret.push_back(finalPQ.top());
-			finalPQ.pop();
+		ret.push_back(finalPQ.top());
+		finalPQ.pop();
 	}
 }
 
@@ -82,25 +80,27 @@ static bool initialized = false;
 static double timeelapsed = 0;
 static bool isfirst = true;
 vector<double> probs;
+
+
+void initializeTST(const char * filepath)
+{
+        tst.deserialize(filepath);
+        initialized = true;
+}
+
 // [[Rcpp::export]]
 vector<string> find(string s)
 {
 	vector<string> ret;
-	if(initialized == false)
-	{
-		tst.deserialize("serial.txt");
-		initialized = true;
-		return ret;		
-	}
 	probs.clear();
 	clock_t begin = clock();
-	vector<SVAL> V;
+	vector<StringProb> V;
 	StupidBackOff(tst, s, V);
 
 	for(int i = 0; i<3 && i < V.size(); i++)
 	{
-		ret.push_back(V[i].s);
-		probs.push_back(V[i].count);
+		ret.push_back(V[i].str);
+		probs.push_back(V[i].prob);
 	}
 	clock_t end = clock();
 

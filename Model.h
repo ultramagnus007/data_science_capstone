@@ -14,11 +14,11 @@ using namespace std;
 
 
 
-vector<string> find(string s = "how is");
+vector<string> find(string s);
 
 
-void initializeTST();
-double gettimeElapsed();
+void initializeTST(const char * filepath);
+string gettimeElapsed();
 
 
 #endif

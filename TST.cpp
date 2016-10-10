@@ -7,7 +7,6 @@
 #include <stack>
 #include <queue>
 #include <cassert>
-
 using namespace std;
 
 node::node(char key, int val)
@@ -41,8 +40,6 @@ void TST::insert(string &str, int val)
 {	
 	root = insert(root, 0, str, val);
 }
-
-
 
 node * TST::findEnd(const string &str)
 {
@@ -80,8 +77,8 @@ void TST::populateTop5(node * ptr, PQ_TYPE & predQ, char * buff, int i)
 	if(ptr->val > 0)
 	{
 		buff[i+1] = '\0';
-		SVAL sval;
-		sval.s = buff;
+		StringCount sval;
+		sval.str = buff;
 		sval.count = ptr->val;
 		// keep only 5 values in queue
 		if(predQ.size() < 5)
@@ -113,11 +110,11 @@ void TST::populateTop5(const string & str, PQ_TYPE & predQ)
 
 
 
-static void inorder(ofstream &outfile, node * ptr, char * buff, int i, int spcount, int ngram)
+void TST::write(ofstream &outfile, node * ptr, char * buff, int i, int spcount, int ngram)
 {
 	if(ptr == NULL)
 		return;
-	inorder(outfile,ptr->left, buff, i , spcount, ngram);
+	write(outfile,ptr->left, buff, i , spcount, ngram);
 	buff[i] = ptr->key;
 	int nextspcount = (ptr->key==' ')? spcount+1:spcount;
 	if(ptr->val > 0 && (ngram == -1 || spcount == ngram-1) )
@@ -125,15 +122,15 @@ static void inorder(ofstream &outfile, node * ptr, char * buff, int i, int spcou
 		buff[i+1] = '\0';
 		outfile<<buff<<"	"<<ptr->val<<endl;
 	}
-	inorder(outfile,ptr->mid, buff, i+1 , nextspcount, ngram);
-	inorder(outfile,ptr->right, buff, i , spcount, ngram);
+	write(outfile,ptr->mid, buff, i+1 , nextspcount, ngram);
+	write(outfile,ptr->right, buff, i , spcount, ngram);
 }
 void TST::write(const char *filepath , int ngram)
 {
 	ofstream outfile;
         outfile.open (filepath);
 	char buff[1000];
-	inorder(outfile,root, buff, 0, 0, ngram);
+	write(outfile,root, buff, 0, 0, ngram);
         outfile.close();
 }
 void TST::read(const char * filepath, int mincount)
